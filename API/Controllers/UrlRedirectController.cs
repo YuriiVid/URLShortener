@@ -1,4 +1,3 @@
-using API.DTOs;
 using API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,14 +6,9 @@ namespace API.Controllers;
 
 [Route("")]
 [ApiController]
-public class UrlRedirectController : ControllerBase
+public class UrlRedirectController(AppDbContext context) : ControllerBase
 {
-    private readonly AppDbContext _context;
-
-    public UrlRedirectController(AppDbContext context)
-    {
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
 
     [HttpGet("{code}")]
     public async Task<IActionResult> RedirectToLongUrl(string code)

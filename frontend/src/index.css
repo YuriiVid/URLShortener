@@ -1,5 +1,4 @@
 @import "tailwindcss";
-/* @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap"); */
 
 body {
   margin: 0;
@@ -8,7 +7,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: #fafafa;
 }
-/* Animation for drag and drop */
 .task-card-dragging {
   opacity: 0.5;
   transform: scale(0.98);

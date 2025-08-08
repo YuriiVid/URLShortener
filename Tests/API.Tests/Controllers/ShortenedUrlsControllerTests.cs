@@ -1,5 +1,5 @@
 using API.Controllers;
-using API.DTOs;
+using API.DTOs.ShortenedUrl;
 using API.Models;
 using API.Services;
 using API.Tests.Helpers;
@@ -17,8 +17,7 @@ public class ShortenedUrlsControllerTests
         var options = TestHelpers.CreateNewContextOptions();
         using var ctx = new AppDbContext(options);
         ctx.ShortenedUrls.AddRange(
-            new[]
-            {
+            [
                 new ShortenedUrl
                 {
                     Id = 1,
@@ -33,7 +32,7 @@ public class ShortenedUrlsControllerTests
                     ShortUrl = "s2",
                     UserId = 2,
                 },
-            }
+            ]
         );
         await ctx.SaveChangesAsync();
 

@@ -21,10 +21,8 @@ function isRejectedActionWithPayload(action: unknown): action is RejectedAction 
   return isRejectedWithValue(action);
 }
 
-// Endpoints that should not show toast notifications
 const SILENT_ENDPOINTS = ["refresh-user-token", "getCurrentUser"];
 
-// URLs that should not show toast notifications
 const SILENT_URL_PATTERNS = ["/api/auth/refresh-user-token"];
 
 function shouldShowToast(action: RejectedAction): boolean {

@@ -80,7 +80,6 @@ builder
 
 builder.Services.AddCors();
 
-// OpenAPI Setup for better Scalar managment in dev
 builder.Services.AddOpenApi(options => options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
 
 var app = builder.Build();

@@ -1,4 +1,4 @@
-using API.DTOs;
+using API.DTOs.Admin;
 using API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,22 +9,15 @@ namespace API.Controllers;
 [Authorize(Policy = "SuperAdminPolicy")]
 [ApiController]
 [Route("api/admins")]
-public class AdminsController : ControllerBase
+public class AdminsController(
+    UserManager<User> userManager,
+    RoleManager<Role> roleManager,
+    ILogger<AdminsController> logger
+) : ControllerBase
 {
-    private readonly UserManager<User> _userManager;
-    private readonly RoleManager<Role> _roleManager;
-    private readonly ILogger<AdminsController> _logger;
-
-    public AdminsController(
-        UserManager<User> userManager,
-        RoleManager<Role> roleManager,
-        ILogger<AdminsController> logger
-    )
-    {
-        _userManager = userManager;
-        _roleManager = roleManager;
-        _logger = logger;
-    }
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly RoleManager<Role> _roleManager = roleManager;
+    private readonly ILogger<AdminsController> _logger = logger;
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AdminUserDto>>> GetAdmins()
@@ -75,14 +68,14 @@ public class AdminsController : ControllerBase
 
         var newAdmin = new User { UserName = dto.UserName };
 
-        var result = await _userManager.CreateAsync(newAdmin, dto.Password);
-        if (!result.Succeeded)
+        var createResult = await _userManager.CreateAsync(newAdmin, dto.Password);
+        if (!createResult.Succeeded)
         {
-            return BadRequest(result.Errors);
+            return BadRequest(createResult.Errors);
         }
 
-        result = await _userManager.AddToRoleAsync(newAdmin, "Admin");
-        if (!result.Succeeded)
+        var addToRoleResult = await _userManager.AddToRoleAsync(newAdmin, "Admin");
+        if (!addToRoleResult.Succeeded)
         {
             _logger.LogError("Failed to add admin role to user {UserName}", dto.UserName);
             await _userManager.DeleteAsync(newAdmin);
@@ -111,7 +104,8 @@ public class AdminsController : ControllerBase
             return NotFound("Admin not found");
         }
 
-        if (!await _userManager.IsInRoleAsync(admin, "Admin"))
+        var isInRoleResult = await _userManager.IsInRoleAsync(admin, "Admin");
+        if (!isInRoleResult)
         {
             return BadRequest("User is not an admin");
         }

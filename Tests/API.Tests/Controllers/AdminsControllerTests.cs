@@ -1,5 +1,5 @@
 using API.Controllers;
-using API.DTOs;
+using API.DTOs.Admin;
 using API.Models;
 using API.Tests.Helpers;
 using Microsoft.AspNetCore.Identity;

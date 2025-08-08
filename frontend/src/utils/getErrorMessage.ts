@@ -1,7 +1,6 @@
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import type { SerializedError } from "@reduxjs/toolkit";
 
-// Type definitions for API error responses
 interface ValidationError {
   errors: Record<string, string[]>;
   type?: string;
@@ -14,7 +13,6 @@ interface MessageError {
   message: string;
 }
 
-// Type guards for better error handling
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
 }
@@ -36,7 +34,6 @@ function formatValidationErrors(errors: Record<string, string[]>): string {
 
   for (const [field, messages] of Object.entries(errors)) {
     if (Array.isArray(messages) && messages.length > 0) {
-      // Format as "Field: error message" or just the error message if it's descriptive
       const fieldErrors = messages.map((msg) =>
         msg.toLowerCase().includes(field.toLowerCase()) ? msg : `${field}: ${msg}`
       );
@@ -56,11 +53,9 @@ export function getErrorMessage(error: FetchBaseQueryError | SerializedError | u
 
     if (error.status === "CUSTOM_ERROR") {
       if (hasDataProperty(error)) {
-        // Check for validation errors first
         if (isValidationError(error.data)) {
           return formatValidationErrors(error.data.errors);
         }
-        // Fallback to message property
         if (isErrorWithMessage(error.data)) {
           return error.data.message;
         }
@@ -68,17 +63,13 @@ export function getErrorMessage(error: FetchBaseQueryError | SerializedError | u
       return "Custom error";
     }
 
-    // Handle other status codes (like 400, 401, 404, etc.)
     if (hasDataProperty(error)) {
-      // Check for validation errors first
       if (isValidationError(error.data)) {
         return formatValidationErrors(error.data.errors);
       }
-      // Check for title property (RFC 9110 Problem Details)
       if (error.data.title && typeof error.data.title === "string") {
         return error.data.title;
       }
-      // Fallback to message property
       if (isErrorWithMessage(error.data)) {
         return error.data.message;
       }
@@ -87,6 +78,5 @@ export function getErrorMessage(error: FetchBaseQueryError | SerializedError | u
     return `Error ${error.status}`;
   }
 
-  // Handle SerializedError
   return error.message ?? "An unknown error occurred";
 }

@@ -1,4 +1,3 @@
-// src/shared/routes/ProtectedRoute.tsx
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@features/auth/hooks";
 import { LoadingScreen, ErrorScreen } from "@shared";

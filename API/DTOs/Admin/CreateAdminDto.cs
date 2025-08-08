@@ -1,4 +1,4 @@
-namespace API.DTOs;
+namespace API.DTOs.Admin;
 
 public class CreateAdminDto
 {

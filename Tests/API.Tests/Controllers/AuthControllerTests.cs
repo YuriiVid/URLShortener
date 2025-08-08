@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 using API.Controllers;
-using API.DTOs;
+using API.DTOs.Auth;
 using API.Models;
 using API.Services;
 using API.Tests.Helpers;
@@ -17,19 +17,19 @@ namespace API.Tests.Controllers;
 
 public class AuthControllerTests
 {
-    private IConfiguration CreateConfig()
+    private static IConfiguration CreateConfig()
     {
         var settings = new Dictionary<string, string?> { ["JWT:RefreshTokenExpiresInDays"] = "7" };
         return new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
     }
 
-    private DefaultHttpContext CreateHttpContextWithCookieHeader(
+    private static DefaultHttpContext CreateHttpContextWithCookieHeader(
         string cookieName,
         string cookieValue
     )
     {
         var ctx = new DefaultHttpContext();
-        ctx.Request.Headers["Cookie"] = $"{cookieName}={cookieValue}";
+        ctx.Request.Headers.Cookie = $"{cookieName}={cookieValue}";
         return ctx;
     }
 
@@ -52,10 +52,9 @@ public class AuthControllerTests
             signIn.Object,
             logger.Object,
             db
-        );
-        controller.ControllerContext = new ControllerContext
+        )
         {
-            HttpContext = new DefaultHttpContext(),
+            ControllerContext = new ControllerContext { HttpContext = new DefaultHttpContext() },
         };
 
         var res = await controller.RefreshUserToken();
@@ -84,10 +83,12 @@ public class AuthControllerTests
             signIn.Object,
             logger.Object,
             db
-        );
-        controller.ControllerContext = new ControllerContext
+        )
         {
-            HttpContext = CreateHttpContextWithCookieHeader("refreshToken", "tok"),
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = CreateHttpContextWithCookieHeader("refreshToken", "tok"),
+            },
         };
 
         var res = await controller.RefreshUserToken();
@@ -127,10 +128,12 @@ public class AuthControllerTests
             signIn.Object,
             logger.Object,
             db
-        );
-        controller.ControllerContext = new ControllerContext
+        )
         {
-            HttpContext = CreateHttpContextWithCookieHeader("refreshToken", "incoming"),
+            ControllerContext = new ControllerContext
+            {
+                HttpContext = CreateHttpContextWithCookieHeader("refreshToken", "incoming"),
+            },
         };
 
         var res = await controller.RefreshUserToken();
@@ -222,7 +225,7 @@ public class AuthControllerTests
         jwt.Setup(j => j.CreateJWT(user)).ReturnsAsync("jwt-token");
 
         userMgr.Setup(u => u.IsLockedOutAsync(user)).ReturnsAsync(false);
-        userMgr.Setup(u => u.GetRolesAsync(user)).ReturnsAsync(new List<string> { "User" });
+        userMgr.Setup(u => u.GetRolesAsync(user)).ReturnsAsync(["User"]);
 
         var controller = new AuthController(
             config,
@@ -508,10 +511,12 @@ public class AuthControllerTests
             db
         );
 
-        var ctx = new DefaultHttpContext();
-        ctx.User = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "55") })
-        );
+        var ctx = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(
+                new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "55")])
+            ),
+        };
         controller.ControllerContext = new ControllerContext { HttpContext = ctx };
 
         var res = await controller.Logout();
@@ -545,10 +550,12 @@ public class AuthControllerTests
             db
         );
 
-        var ctx = new DefaultHttpContext();
-        ctx.User = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "77") })
-        );
+        var ctx = new DefaultHttpContext
+        {
+            User = new ClaimsPrincipal(
+                new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, "77")])
+            ),
+        };
         ctx.Response.Cookies.Append("refreshToken", "some-val");
         controller.ControllerContext = new ControllerContext { HttpContext = ctx };
 

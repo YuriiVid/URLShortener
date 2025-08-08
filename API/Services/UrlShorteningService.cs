@@ -4,18 +4,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Services;
 
-public class UrlShorteningService : IUrlShorteningService
+public class UrlShorteningService(AppDbContext dbContext) : IUrlShorteningService
 {
     private const string ValidChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     private const int MaxRetries = 3;
-    private readonly AppDbContext _dbContext;
-    private readonly RandomNumberGenerator _rng;
-
-    public UrlShorteningService(AppDbContext dbContext)
-    {
-        _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        _rng = RandomNumberGenerator.Create();
-    }
+    private readonly AppDbContext _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly RandomNumberGenerator _rng = RandomNumberGenerator.Create();
 
     public async Task<string> GenerateUniqueCodeAsync(int length)
     {

@@ -1,4 +1,5 @@
 using API.DTOs;
+using API.DTOs.Auth;
 using API.Extensions;
 using API.Models;
 using API.Services;
@@ -11,31 +12,21 @@ namespace API.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController : ControllerBase
+public class AuthController(
+    IConfiguration config,
+    UserManager<User> userManager,
+    IJWTService jwtService,
+    SignInManager<User> signInManager,
+    ILogger<AuthController> logger,
+    AppDbContext context
+) : ControllerBase
 {
-    private readonly IConfiguration _config;
-    private readonly ILogger _logger;
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-    private readonly IJWTService _jwtService;
-    private readonly AppDbContext _context;
-
-    public AuthController(
-        IConfiguration config,
-        UserManager<User> userManager,
-        IJWTService jwtService,
-        SignInManager<User> signInManager,
-        ILogger<AuthController> logger,
-        AppDbContext context
-    )
-    {
-        _config = config;
-        _userManager = userManager;
-        _jwtService = jwtService;
-        _signInManager = signInManager;
-        _logger = logger;
-        _context = context;
-    }
+    private readonly IConfiguration _config = config;
+    private readonly ILogger _logger = logger;
+    private readonly UserManager<User> _userManager = userManager;
+    private readonly SignInManager<User> _signInManager = signInManager;
+    private readonly IJWTService _jwtService = jwtService;
+    private readonly AppDbContext _context = context;
 
     [HttpGet("refresh-user-token")]
     public async Task<IActionResult> RefreshUserToken()
@@ -72,8 +63,7 @@ public class AuthController : ControllerBase
             );
         }
 
-        var newRefresh = await _jwtService.CreateRefreshTokenAsync(user);
-        AddRefreshTokenCookie(newRefresh);
+        AddRefreshTokenCookie(await _jwtService.CreateRefreshTokenAsync(user));
         return Ok(await CreateAuthUserDto(user));
     }
 
@@ -143,7 +133,9 @@ public class AuthController : ControllerBase
 
     private async Task<bool> CheckUserNameExistsAsync(string userName)
     {
-        return await _userManager.Users.AnyAsync(x => x.NormalizedUserName == userName.ToUpper());
+        return await _userManager.Users.AnyAsync(x =>
+            x.NormalizedUserName!.Equals(userName, StringComparison.OrdinalIgnoreCase)
+        );
     }
 
     private async Task<AuthUserDto> CreateAuthUserDto(User user)

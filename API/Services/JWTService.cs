@@ -1,4 +1,3 @@
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -35,8 +34,8 @@ public class JWTService : IJWTService
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName!),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Name, user.UserName!),
         };
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -79,10 +78,15 @@ public class JWTService : IJWTService
     public bool IsRefreshTokenValid(string storedToken)
     {
         if (string.IsNullOrEmpty(storedToken))
+        {
             return false;
+        }
+
         var parts = storedToken.Split('|', 2);
         if (parts.Length != 2)
+        {
             return false;
+        }
 
         if (!DateTime.TryParse(parts[0], null, System.Globalization.DateTimeStyles.RoundtripKind, out var expiry))
             return false;

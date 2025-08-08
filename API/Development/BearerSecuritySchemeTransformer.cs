@@ -30,7 +30,6 @@ internal sealed class BearerSecuritySchemeTransformer(
                 }
             );
 
-            // Add "Bearer" scheme as a requirement for the API as a whole
             document.SecurityRequirements.Add(
                 new OpenApiSecurityRequirement
                 {

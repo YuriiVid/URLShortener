@@ -1,4 +1,4 @@
-using API.DTOs;
+using API.DTOs.AboutPage;
 using API.Extensions;
 using API.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -10,21 +10,22 @@ namespace API.Controllers;
 
 [ApiController]
 [Route("api/about")]
-public class AboutPageController : ControllerBase
+public class AboutPageController(AppDbContext context) : ControllerBase
 {
-    private readonly AppDbContext _context;
-
-    public AboutPageController(AppDbContext context)
-    {
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
+    private const int ABOUT_PAGE_ID = 1;
 
     [HttpGet]
     public async Task<ActionResult<AboutPageDto>> GetAboutPage()
     {
-        var page = await _context.AboutPages.Include(a => a.LastUpdatedBy).FirstOrDefaultAsync(ap => ap.Id == 1);
+        var page = await _context
+            .AboutPages.Include(a => a.LastUpdatedBy)
+            .FirstOrDefaultAsync(ap => ap.Id == ABOUT_PAGE_ID);
+
         if (page == null)
+        {
             return NotFound();
+        }
 
         var path = Path.Combine("Storage", page.ContentFileName);
         return new AboutPageDto
@@ -40,11 +41,15 @@ public class AboutPageController : ControllerBase
     public async Task<IActionResult> UpdateAboutPage(UpdateAboutPageDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Content))
+        {
             return BadRequest("Content is required");
+        }
 
-        var about = await _context.AboutPages.FirstOrDefaultAsync(x => x.Id == 1);
+        var about = await _context.AboutPages.FirstOrDefaultAsync(x => x.Id == ABOUT_PAGE_ID);
         if (about == null)
+        {
             return NotFound();
+        }
 
         var path = Path.Combine("Storage", about.ContentFileName);
         await System.IO.File.WriteAllTextAsync(path, dto.Content);

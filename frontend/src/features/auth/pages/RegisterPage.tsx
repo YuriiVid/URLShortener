@@ -29,7 +29,13 @@ const RegisterPage = () => {
 
   const onInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setCredentials((prev) => ({ ...prev, [name]: value }));
+    if (name in credentials) {
+      setCredentials((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+
     setFormError(null);
   }, []);
 
@@ -93,7 +99,7 @@ const RegisterPage = () => {
               id={id}
               label={label}
               name={name}
-              value={(credentials as any)[name]}
+              value={credentials[name as keyof Credentials]}
               onChange={onInputChange}
               required
               {...rest}

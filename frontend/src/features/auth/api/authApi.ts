@@ -3,6 +3,8 @@ import type { LoginCredentials, UserDataResponse, RegisterCredentials, TitleMess
 import { logout, setToken, setUser } from "../authSlice";
 import { rawBaseQuery } from "@shared/api/client";
 
+const KEEP_UNUSED_DATA_SECONDS = 15 * 60;
+
 export const authApi = api.injectEndpoints({
   endpoints: (build) => ({
     login: build.mutation<UserDataResponse, LoginCredentials>({
@@ -32,8 +34,7 @@ export const authApi = api.injectEndpoints({
 
         return { data: result.data as UserDataResponse };
       },
-      // only fetch once per session:
-      keepUnusedDataFor: 800,
+      keepUnusedDataFor: KEEP_UNUSED_DATA_SECONDS,
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;

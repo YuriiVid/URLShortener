@@ -1,7 +1,6 @@
 using API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using NodaTime;
 
 namespace API.Seeds
 {

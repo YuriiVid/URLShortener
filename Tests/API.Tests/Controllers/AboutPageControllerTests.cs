@@ -1,6 +1,5 @@
-using System.Security.Claims;
 using API.Controllers;
-using API.DTOs;
+using API.DTOs.AboutPage;
 using API.Models;
 using API.Tests.Helpers;
 using Microsoft.AspNetCore.Http;
@@ -42,7 +41,6 @@ public class AboutPageControllerTests
         context.AboutPages.Add(about);
         await context.SaveChangesAsync();
 
-        // Mock file reading
         var filePath = Path.Combine("Storage", about.ContentFileName);
         Directory.CreateDirectory("Storage");
         File.WriteAllText(filePath, "Test content");

@@ -4,11 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Models;
 
-public partial class AppDbContext : IdentityDbContext<User, Role, int>
+public partial class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User, Role, int>(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options) { }
-
     public DbSet<ShortenedUrl> ShortenedUrls { get; set; }
     public DbSet<AboutPage> AboutPages { get; set; } = null!;
 

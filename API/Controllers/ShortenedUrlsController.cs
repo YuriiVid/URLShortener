@@ -1,4 +1,4 @@
-using API.DTOs;
+using API.DTOs.ShortenedUrl;
 using API.Extensions;
 using API.Models;
 using API.Services;
@@ -10,24 +10,17 @@ namespace API.Controllers;
 
 [Route("api/shortenedUrls")]
 [ApiController]
-public class ShortenedUrlsController : ControllerBase
+public class ShortenedUrlsController(AppDbContext context, IUrlShorteningService urlShorteningService) : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly IUrlShorteningService _urlShorteningService;
-
-    public ShortenedUrlsController(AppDbContext context, IUrlShorteningService urlShorteningService)
-    {
-        _urlShorteningService = urlShorteningService;
-        _context = context;
-    }
+    private readonly AppDbContext _context = context;
+    private readonly IUrlShorteningService _urlShorteningService = urlShorteningService;
 
     [HttpGet]
     public async Task<ActionResult<List<ShortenedUrlDto>>> GetShortenedUrls()
     {
-        var urls = await _context.ShortenedUrls.ToListAsync();
-
         return Ok(
-            urls.Select(u => new ShortenedUrlDto
+            (await _context.ShortenedUrls.ToListAsync())
+                .Select(u => new ShortenedUrlDto
                 {
                     Id = u.Id,
                     LongUrl = u.LongUrl,
@@ -76,18 +69,17 @@ public class ShortenedUrlsController : ControllerBase
         }
 
         var existingShortenedUrl = await _context.ShortenedUrls.FirstOrDefaultAsync(u => u.LongUrl == dto.LongUrl);
-
         if (existingShortenedUrl != null)
         {
             return Conflict("Shortened URL already exists for the provided long URL");
         }
 
         var code = await _urlShorteningService.GenerateUniqueCodeAsync();
-        var baseUrl = Request.BaseUrl();
+
         var shortenedUrl = new ShortenedUrl
         {
             LongUrl = dto.LongUrl,
-            ShortUrl = $"{baseUrl}{code}",
+            ShortUrl = $"{Request.BaseUrl()}{code}",
             UserId = User.GetCurrentUserId(),
             UniqueCode = code,
         };

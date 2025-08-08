@@ -1,6 +1,6 @@
 using NodaTime;
 
-namespace API.DTOs;
+namespace API.DTOs.ShortenedUrl;
 
 public class FullShortenedUrlDto
 {

@@ -21,7 +21,6 @@ public static class SuperAdminSeeder
             await roleManager.CreateAsync(new Role { Name = role, NormalizedName = role.ToUpper() });
         }
 
-        // Ensure user exists
         var superAdmin = await userManager.FindByNameAsync(userName);
         if (superAdmin == null)
         {
