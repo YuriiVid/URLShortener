@@ -4,6 +4,7 @@ using API.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NodaTime;
 
 namespace API.Controllers;
 
@@ -21,7 +22,7 @@ public class AboutPageController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<AboutPageDto>> GetAboutPage()
     {
-        var page = await _context.AboutPages.FirstOrDefaultAsync(ap => ap.Id == 1);
+        var page = await _context.AboutPages.Include(a => a.LastUpdatedBy).FirstOrDefaultAsync(ap => ap.Id == 1);
         if (page == null)
             return NotFound();
 
@@ -29,7 +30,7 @@ public class AboutPageController : ControllerBase
         return new AboutPageDto
         {
             Content = System.IO.File.ReadAllText(path),
-            LastUpdated = page.LastUpdated,
+            LastUpdatedAt = page.LastUpdated,
             LastUpdatedBy = page.LastUpdatedBy?.UserName ?? "Unknown",
         };
     }
@@ -48,6 +49,7 @@ public class AboutPageController : ControllerBase
         var path = Path.Combine("Storage", about.ContentFileName);
         await System.IO.File.WriteAllTextAsync(path, dto.Content);
         about.LastUpdatedById = User.GetCurrentUserId();
+        about.LastUpdated = Instant.FromDateTimeUtc(DateTime.UtcNow);
 
         await _context.SaveChangesAsync();
         return NoContent();

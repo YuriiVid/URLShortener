@@ -29,6 +29,7 @@ public class ShortenedUrlsController : ControllerBase
         return Ok(
             urls.Select(u => new ShortenedUrlDto
                 {
+                    Id = u.Id,
                     LongUrl = u.LongUrl,
                     ShortUrl = u.ShortUrl,
                     UserId = u.UserId,
@@ -50,8 +51,9 @@ public class ShortenedUrlsController : ControllerBase
         return Ok(
             new FullShortenedUrlDto
             {
+                Id = url.Id,
                 ShortUrl = url.ShortUrl,
-                FullUrl = url.LongUrl,
+                LongUrl = url.LongUrl,
                 CreatedAt = url.CreatedAt,
                 CreatedBy = url.User?.UserName ?? "Unknown",
             }
@@ -65,6 +67,11 @@ public class ShortenedUrlsController : ControllerBase
         if (string.IsNullOrWhiteSpace(dto.LongUrl))
         {
             return BadRequest("Long URL cannot be empty");
+        }
+
+        if (!dto.LongUrl.IsValidUrl())
+        {
+            return BadRequest("Invalid URL format. URL must start with http:// or https://");
         }
 
         var code = await _urlShorteningService.GenerateUniqueCodeAsync();
@@ -90,5 +97,26 @@ public class ShortenedUrlsController : ControllerBase
                 UserId = shortenedUrl.UserId,
             }
         );
+    }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteShortenedUrl(int id)
+    {
+        var url = await _context.ShortenedUrls.FindAsync(id);
+        if (url == null)
+        {
+            return NotFound("Shortened URL not found");
+        }
+
+        if (url.UserId != User.GetCurrentUserId() && !User.IsInRole("Admin"))
+        {
+            return Forbid();
+        }
+
+        _context.ShortenedUrls.Remove(url);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }

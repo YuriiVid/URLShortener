@@ -158,12 +158,17 @@ public class AuthController : ControllerBase
         return await _userManager.Users.AnyAsync(x => x.NormalizedUserName == userName.ToUpper());
     }
 
-    private async Task<AuthUserDto> CreateAuthUserDto(User appUser)
+    private async Task<AuthUserDto> CreateAuthUserDto(User user)
     {
         return new AuthUserDto
         {
-            User = new UserDto { Id = appUser.Id, UserName = appUser.UserName },
-            JWT = await _jwtService.CreateJWT(appUser),
+            User = new UserDto
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "User",
+            },
+            JWT = await _jwtService.CreateJWT(user),
         };
     }
 }
