@@ -60,7 +60,7 @@ const AboutEditor = forwardRef<HTMLTextAreaElement, AboutEditorProps>(
           id="content"
           ref={ref}
           readOnly={!isEditing}
-          className={`w-full min-h-[250px] p-3 rounded-xl border-2 resize-none font-mono text-sm leading-relaxed transition-all duration-300 ease-in-out
+          className={`w-full min-h-[260px] p-3 rounded-xl border-2 resize-none font-mono text-sm leading-relaxed transition-all duration-300 ease-in-out
             ${
               isEditing
                 ? "border-blue-300 bg-blue-50/30 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"

@@ -14,8 +14,6 @@ export function AdminsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [adminToDeleteId, setAdminToDeleteId] = useState<number | null>(null);
-  const [newUsername, setNewUsername] = useState("");
-  const [newPassword, setNewPassword] = useState("");
 
   const handleDeleteClick = (admin: Admin) => {
     setAdminToDeleteId(admin.id);
@@ -36,18 +34,16 @@ export function AdminsPage() {
 
       try {
         await createAdmin({
-          userName: newUsername.trim(),
-          password: newPassword.trim(),
+          userName: username.trim(),
+          password: password.trim(),
         }).unwrap();
-        setNewUsername("");
-        setNewPassword("");
         setIsCreateModalOpen(false);
         toast.success("Admin created successfully!");
       } catch (error) {
         console.error("Failed to create admin:", error);
       }
     },
-    [newUsername, newPassword, createAdmin]
+    [createAdmin]
   );
 
   const handleConfirmDelete = useCallback(async () => {

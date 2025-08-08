@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Modal } from "@shared";
+import toast from "react-hot-toast";
 
 interface CreateAdminModalProps {
   isOpen: boolean;
@@ -17,17 +18,30 @@ export const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9!@#$%^&*]{6,}$/;
+
   const handleConfirm = () => {
-    if (!username.trim() || !password.trim()) return;
+    if (!username.trim() || !password.trim()) {
+      toast.error("Username and password are required.");
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      return;
+    }
+
     onConfirm(username, password);
-    setUsername("");
-    setPassword("");
+    resetForm();
   };
 
   const handleCancel = () => {
+    resetForm();
+    onCancel();
+  };
+
+  const resetForm = () => {
     setUsername("");
     setPassword("");
-    onCancel();
   };
 
   return (
@@ -46,8 +60,11 @@ export const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
             type="text"
             placeholder="Enter username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(e) => {
+              setUsername(e.target.value);
+            }}
             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
           />
         </div>
 
@@ -58,8 +75,13 @@ export const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
               type={showPassword ? "text" : "password"}
               placeholder="Enter password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 pr-16 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+              className={`w-full px-3 py-2 pr-16 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                password && !passwordRegex.test(password) ? "border-red-500" : "border-gray-300"
+              }`}
+              required
             />
             <button
               type="button"
@@ -72,6 +94,12 @@ export const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
           <p className="mt-1 text-xs text-yellow-600">
             ⚠️ Please remember or write down this password — it won’t be shown again.
           </p>
+          {password && !passwordRegex.test(password) && (
+            <p className="mt-1 text-xs text-red-600">
+              Password must be at least 6 characters, and include at least one upper-case, one lower-case letter, one
+              number and one symbol
+            </p>
+          )}
         </div>
       </div>
     </Modal>

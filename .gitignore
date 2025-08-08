@@ -603,5 +603,3 @@ dist-ssr
 *.njsproj
 *.sw?
 .vite/
-
-API/Storage/*

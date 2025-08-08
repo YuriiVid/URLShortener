@@ -30,9 +30,9 @@ cd UrlShortener
 #### 2. Copy the example environment files and edit them with your own values:
 
 ```bash
-cp API/.config/api_example.env .env     # For ASP.NET Core backend
-cp API/.config/db_example.env db.env    # For PostgreSQL
-cp frontend/example.env frontend/.env   # For React frontend
+cp API/.config/api.env.example API/.config/api.env     # For ASP.NET Core backend
+cp API/.config/db.env.example API/.config/db.env    # For PostgreSQL
+cp frontend/.env.example frontend/.env   # For React frontend
 ```
 
 Edit these files to match your local or production setup. See [Environment Configuration](#environment-configuration) for details.
@@ -53,7 +53,7 @@ Backend (ASP.NET Core API):
 
 ```bash
 dotnet restore
-dotnet run
+dotnet run --project API
 ```
 
 Frontend (React):
@@ -69,12 +69,21 @@ Open the app:
 - Frontend: http://localhost:3000
 - API: http://localhost:5196 (or configured in .env)
 
+To log into Superuser account use next credentials:
+
+```
+Username: superadmin
+Password: SuperAdmin123!
+```
+
 ## Running the tests
+
 Run all unit tests via CLI:
 
 ```bash
 dotnet test
 ```
+
 This command:
 
 Builds the solution.
@@ -89,15 +98,15 @@ If you use Visual Studio or VS Code, you can also run tests via the Test Explore
 
 To run this project, you will need to add the following environment variables to your .env file
 
-| **File**        | **Variable**                                          | **Description**                  | **Example**              |
-| --------------- | ----------------------------------------------------- | -------------------------------- | ------------------------ |
-| `.env` (API)    | `ASPNETCORE_ENVIRONMENT`                              | ASP.NET environment              | `Development`            |
-|                 | `ASPNETCORE_HTTPS_PORTS`                              | HTTP port                       | `5196`                   |
-| `db.env`        | `POSTGRES_USER`                                       | Database username                | `user`               |
-|                 | `POSTGRES_PASSWORD`                                   | Database password                | `password`            |
-|                 | `POSTGRES_DB`                                         | Name of the database             | `url_shortener`             |
-| `frontend/.env` | `NODE_ENV`                                            | Frontend environment             | `development`            |
-|                 | `VITE_API_URL`                                        | Backend API base URL             | `https://localhost:5196/api` |
+| **File**        | **Variable**             | **Description**      | **Example**                  |
+| --------------- | ------------------------ | -------------------- | ---------------------------- |
+| `.env` (API)    | `ASPNETCORE_ENVIRONMENT` | ASP.NET environment  | `Development`                |
+|                 | `ASPNETCORE_HTTPS_PORTS` | HTTP port            | `5196`                       |
+| `db.env`        | `POSTGRES_USER`          | Database username    | `user`                       |
+|                 | `POSTGRES_PASSWORD`      | Database password    | `password`                   |
+|                 | `POSTGRES_DB`            | Name of the database | `url_shortener`              |
+| `frontend/.env` | `NODE_ENV`               | Frontend environment | `development`                |
+|                 | `VITE_API_URL`           | Backend API base URL | `https://localhost:5196/api` |
 
 Also you need to change database connection string and JWT key in corresponding appsettings.json. If u are using Docker set ASPNETCORE_ENVIRONMENT to "Docker" and change appsettings.Docker.json. Other changes in configuration are up to you.
 
@@ -114,4 +123,3 @@ Also you need to change database connection string and JWT key in corresponding 
 ## Authors
 
 - **Yurii Vidoniak** - _Initial work_ - [YuriiVid](https://github.com/YuriiVid)
-

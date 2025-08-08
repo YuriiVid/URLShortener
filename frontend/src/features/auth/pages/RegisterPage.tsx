@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { type ChangeEvent, type SyntheticEvent, useCallback, useState } from "react";
 import { useRegisterMutation } from "../api/authApi";
-import { getErrorMessage } from "@utils";
 import InputField from "../components/InputField/InputField";
 import { Lock, User } from "lucide-react";
 import AuthLayout from "../components/AuthLayout/AuthLayout";
@@ -16,7 +15,6 @@ interface Credentials {
 }
 
 const RegisterPage = () => {
-  const [formError, setFormError] = useState<string | null>(null);
   const [credentials, setCredentials] = useState<Credentials>({
     userName: "",
     password: "",
@@ -24,8 +22,7 @@ const RegisterPage = () => {
   });
 
   const navigate = useNavigate();
-  const [register, { isLoading, isError, error }] = useRegisterMutation();
-  const serverError = isError ? getErrorMessage(error) : null;
+  const [register, { isLoading }] = useRegisterMutation();
 
   const onInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,8 +32,6 @@ const RegisterPage = () => {
         [name]: value,
       }));
     }
-
-    setFormError(null);
   }, []);
 
   const handleSubmit = useCallback(
@@ -45,7 +40,7 @@ const RegisterPage = () => {
       const { password, confirmPassword, userName } = credentials;
 
       if (password !== confirmPassword) {
-        setFormError("Passwords do not match");
+        toast.error("Passwords do not match");
         return;
       }
 
@@ -76,8 +71,10 @@ const RegisterPage = () => {
       icon: Lock,
       type: "password",
       placeholder: "••••••••",
-      pattern: "^(?=.*[0-9])(?=.*[!@#$%^&*]).{6,}$",
-      title: "Password must be at least 6 characters, and include at least one number and one symbol",
+      pattern:
+        "^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9!@#$%^&*]{6,}$",
+      title:
+        "Password must be at least 6 characters, and include at least one upper-case, one lower-case letter, one number and one symbol",
     },
     {
       id: "confirmPassword",
@@ -105,8 +102,6 @@ const RegisterPage = () => {
               {...rest}
             />
           ))}
-
-          {(formError || serverError) && <div className="error-message">{formError || serverError}</div>}
 
           <button className="btn-primary w-full" type="submit" disabled={isLoading}>
             {isLoading ? <LoadingSpinner className="h-5 w-5" /> : "Sign Up"}

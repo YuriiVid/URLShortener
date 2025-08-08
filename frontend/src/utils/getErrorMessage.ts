@@ -13,6 +13,11 @@ interface MessageError {
   message: string;
 }
 
+interface PasswordPolicyError {
+  code: string;
+  description: string;
+}
+
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
 }
@@ -27,6 +32,18 @@ function isValidationError(data: unknown): data is ValidationError {
 
 function isErrorWithMessage(data: unknown): data is MessageError {
   return typeof data === "object" && data != null && "message" in data && typeof (data as any).message === "string";
+}
+
+function isPasswordPolicyErrorArray(data: unknown): data is PasswordPolicyError[] {
+  return (
+    Array.isArray(data) &&
+    data.length > 0 &&
+    typeof data[0] === "object" &&
+    data[0] !== null &&
+    "code" in data[0] &&
+    "description" in data[0] &&
+    typeof (data[0] as any).description === "string"
+  );
 }
 
 function formatValidationErrors(errors: Record<string, string[]>): string {
@@ -44,6 +61,10 @@ function formatValidationErrors(errors: Record<string, string[]>): string {
   return errorMessages.join(", ");
 }
 
+function formatPasswordPolicyErrors(errors: PasswordPolicyError[]): string {
+  return errors.map((e) => e.description).join(", ");
+}
+
 export function getErrorMessage(error: FetchBaseQueryError | SerializedError | undefined): string {
   if (!error) return "Unknown error";
 
@@ -56,6 +77,9 @@ export function getErrorMessage(error: FetchBaseQueryError | SerializedError | u
         if (isValidationError(error.data)) {
           return formatValidationErrors(error.data.errors);
         }
+        if (isPasswordPolicyErrorArray(error.data)) {
+          return formatPasswordPolicyErrors(error.data);
+        }
         if (isErrorWithMessage(error.data)) {
           return error.data.message;
         }
@@ -66,6 +90,9 @@ export function getErrorMessage(error: FetchBaseQueryError | SerializedError | u
     if (hasDataProperty(error)) {
       if (isValidationError(error.data)) {
         return formatValidationErrors(error.data.errors);
+      }
+      if (isPasswordPolicyErrorArray(error.data)) {
+        return formatPasswordPolicyErrors(error.data);
       }
       if (error.data.title && typeof error.data.title === "string") {
         return error.data.title;

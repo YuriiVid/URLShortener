@@ -133,9 +133,7 @@ public class AuthController(
 
     private async Task<bool> CheckUserNameExistsAsync(string userName)
     {
-        return await _userManager.Users.AnyAsync(x =>
-            x.NormalizedUserName!.Equals(userName, StringComparison.OrdinalIgnoreCase)
-        );
+        return await _userManager.Users.AnyAsync(x => x.NormalizedUserName == userName.ToUpper());
     }
 
     private async Task<AuthUserDto> CreateAuthUserDto(User user)

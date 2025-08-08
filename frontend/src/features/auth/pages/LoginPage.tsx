@@ -1,7 +1,6 @@
 import { useState, type ChangeEvent, type SyntheticEvent, useCallback } from "react";
 import { useLoginMutation } from "../api/authApi";
 import { useNavigate } from "react-router-dom";
-import { getErrorMessage } from "@utils";
 import { User, Lock } from "lucide-react";
 import InputField from "../components/InputField/InputField";
 import AuthLayout from "../components/AuthLayout/AuthLayout";
@@ -17,7 +16,7 @@ const LoginPage = () => {
   });
   const { userName, password } = credentials;
 
-  const [login, { isLoading, isError, error }] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
   const navigate = useNavigate();
 
   const onInputChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +64,7 @@ const LoginPage = () => {
             placeholder="••••••••"
             required
           />
-          {isError && <div className="error-message">{getErrorMessage(error)}</div>}
+
           <button className="btn-primary w-full" type="submit" disabled={isLoading}>
             {isLoading ? <LoadingSpinner className="h-5 w-5" /> : "Sign In"}
           </button>

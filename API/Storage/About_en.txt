@@ -1,0 +1,9 @@
+This application allows users to generate short, unique, and shareable links from long URLs.
+
+How the URL Shortening Algorithm Works:
+    System uses a random string generation approach based on the following logic:
+    A constant set of valid characters is defined, including uppercase, lowercase letters, and digits.  
+    A cryptographic random number generator (RNG) is used to ensure secure and unpredictable character sequences.
+	Each generated string (code) is checked against the database to ensure uniqueness.
+	Up to 3 retries are performed if a conflict is found, checking multiple random codes in batches.
+    Once a unique code is found, it is returned and stored along with the original URL.
