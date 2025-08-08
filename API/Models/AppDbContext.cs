@@ -10,6 +10,7 @@ public partial class AppDbContext : IdentityDbContext<User, Role, int>
         : base(options) { }
 
     public DbSet<ShortenedUrl> ShortenedUrls { get; set; }
+    public DbSet<AboutPage> AboutPages { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -18,5 +19,6 @@ public partial class AppDbContext : IdentityDbContext<User, Role, int>
         builder.Entity<ShortenedUrl>(e => e.HasIndex(p => p.UniqueCode).IsUnique());
 
         builder.ApplyConfiguration(new RoleConfiguration());
+        builder.ApplyConfiguration(new AboutPageConfiguration());
     }
 }

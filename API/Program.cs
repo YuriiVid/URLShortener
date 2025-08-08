@@ -1,4 +1,5 @@
 using System.Text;
+using API.Filters;
 using API.Models;
 using API.Seeds;
 using API.Services;
@@ -6,13 +7,22 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using NodaTime;
+using NodaTime.Serialization.JsonNet;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddConsole();
 
-builder.Services.AddControllers();
+builder
+    .Services.AddControllers(opt => opt.Filters.Add<GlobalJsonResponseFilter>())
+    .AddNewtonsoftJson(opt =>
+    {
+        opt.SerializerSettings.DateParseHandling = DateParseHandling.None;
+        opt.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Tzdb);
+    });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"), o => o.UseNodaTime())
@@ -28,6 +38,7 @@ builder
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IJWTService, JWTService>();
+builder.Services.AddScoped<IUrlShorteningService, UrlShorteningService>();
 
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -63,8 +74,9 @@ builder
 
 builder
     .Services.AddAuthorizationBuilder()
-    .AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"))
-    .AddDefaultPolicy("UserPolicy", policy => policy.RequireRole("User", "Admin"));
+    .AddPolicy("SuperAdminPolicy", policy => policy.RequireRole("SuperAdmin"))
+    .AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin", "SuperAdmin"))
+    .AddDefaultPolicy("UserPolicy", policy => policy.RequireRole("User", "Admin", "SuperAdmin"));
 
 builder.Services.AddCors();
 
