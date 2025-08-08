@@ -21,7 +21,7 @@ services:
       - /source/obj/ # <- directory won't be mounted
       - /source/bin/
     networks:
-      - shortener-network
+      - main-network
     logging:
       driver: "json-file"
       options:
@@ -36,7 +36,7 @@ services:
       db:
         condition: service_healthy
     networks:
-      - shortener-network
+      - main-network
     env_file:
       - ./API/.config/api.env
     volumes:
@@ -64,35 +64,35 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - shortener-network
+      - main-network
     logging:
       driver: "json-file"
       options:
         max-size: "200k"
         max-file: "10"
-# front:
-#   image: shortener_front
-#   container_name: shortener_front
-#   build:
-#     context: ./frontend
-#     dockerfile: front.Dockerfile
-#   restart: always
-#   depends_on:
-#     - api
-#   ports:
-#     - 3000:3000
-#   env_file:
-#     - ./frontend/.env
-#   volumes:
-#     - ./frontend:/app
-#     - /app/node_modules
-#   logging:
-#     driver: "json-file"
-#     options:
-#       max-size: "200k"
-#       max-file: "10"
+
+  front:
+    container_name: shortener_front
+    build:
+      context: ./frontend
+      dockerfile: front.Dockerfile
+    restart: always
+    depends_on:
+      - api
+    ports:
+      - 3000:3000
+    env_file:
+      - ./frontend/.env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
 volumes:
   db-data:
 networks:
-  shortener-network:
+  main-network:
     driver: bridge
