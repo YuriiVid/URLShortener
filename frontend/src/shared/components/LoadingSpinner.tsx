@@ -14,7 +14,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ className = "" }) => {
         border-4
         border-t-current
         border-gray-200
-		text-teal-500
+		text-blue-500
         ${className}
       `}
     />

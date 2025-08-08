@@ -74,6 +74,13 @@ public class ShortenedUrlsController : ControllerBase
             return BadRequest("Invalid URL format. URL must start with http:// or https://");
         }
 
+        var existingShortenedUrl = await _context.ShortenedUrls.FirstOrDefaultAsync(u => u.LongUrl == dto.LongUrl);
+
+        if (existingShortenedUrl != null)
+        {
+            return Conflict("Shortened URL already exists for the provided long URL");
+        }
+
         var code = await _urlShorteningService.GenerateUniqueCodeAsync();
         var baseUrl = Request.BaseUrl();
         var shortenedUrl = new ShortenedUrl

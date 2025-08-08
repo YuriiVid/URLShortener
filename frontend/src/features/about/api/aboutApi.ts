@@ -1,14 +1,5 @@
 import { api } from "@shared";
-
-export interface AboutResponse {
-  content: string;
-  lastUpdatedBy?: string;
-  lastUpdatedAt?: string;
-}
-
-export interface UpdateAboutRequest {
-  content: string;
-}
+import type { AboutResponse, UpdateAboutRequest } from "../types";
 
 export const aboutApi = api.injectEndpoints({
   endpoints: (build) => ({

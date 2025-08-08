@@ -116,7 +116,7 @@ public class AdminsController : ControllerBase
             return BadRequest("User is not an admin");
         }
 
-        var result = await _userManager.RemoveFromRoleAsync(admin, "Admin");
+        var result = await _userManager.DeleteAsync(admin);
         if (!result.Succeeded)
         {
             return StatusCode(500, "Failed to remove admin role");

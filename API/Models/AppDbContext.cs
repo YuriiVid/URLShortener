@@ -17,6 +17,7 @@ public partial class AppDbContext : IdentityDbContext<User, Role, int>
         base.OnModelCreating(builder);
 
         builder.Entity<ShortenedUrl>(e => e.HasIndex(p => p.UniqueCode).IsUnique());
+        builder.Entity<ShortenedUrl>(e => e.HasIndex(p => p.LongUrl).IsUnique());
 
         builder.ApplyConfiguration(new RoleConfiguration());
         builder.ApplyConfiguration(new AboutPageConfiguration());
