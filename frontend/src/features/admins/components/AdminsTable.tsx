@@ -1,12 +1,13 @@
 import { AdminRow } from "./AdminRow";
 import type { Admin } from "../types";
+import type React from "react";
 
 interface AdminsTableProps {
   admins: Admin[];
   onDelete: (admin: Admin) => void;
 }
 
-export const AdminTable = ({ admins, onDelete }: AdminsTableProps) => {
+export const AdminTable: React.FC<AdminsTableProps> = ({ admins, onDelete }: AdminsTableProps) => {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">

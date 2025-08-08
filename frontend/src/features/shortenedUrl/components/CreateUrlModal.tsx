@@ -1,5 +1,6 @@
 import { Modal } from "@shared";
 import { isValidUrl } from "@utils";
+import type React from "react";
 
 interface CreateUrlModalProps {
   isOpen: boolean;
@@ -9,7 +10,13 @@ interface CreateUrlModalProps {
   setNewUrl: (value: string) => void;
 }
 
-const CreateUrlModal = ({ isOpen, onClose, onCreate, newUrl, setNewUrl }: CreateUrlModalProps) => {
+const CreateUrlModal: React.FC<CreateUrlModalProps> = ({
+  isOpen,
+  onClose,
+  onCreate,
+  newUrl,
+  setNewUrl,
+}: CreateUrlModalProps) => {
   return (
     <Modal
       isOpen={isOpen}

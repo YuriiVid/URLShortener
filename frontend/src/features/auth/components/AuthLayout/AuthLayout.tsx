@@ -1,5 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface AuthLayoutProps {
   title: string;
@@ -7,19 +6,8 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout = ({ title, children }: AuthLayoutProps) => {
-  const navigate = useNavigate();
-
   return (
     <div className="min-h-screen relative flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <button
-        onClick={() => navigate(-1)}
-        className="absolute top-4 left-4 p-2 rounded-full hover:bg-white/50 transition-colors duration-200"
-        aria-label="Go back"
-      >
-        <ArrowLeft className="h-6 w-6 text-gray-600 hover:text-gray-900" />
-      </button>
-
-      {/* ...existing code... */}
       <div className="w-full max-w-md px-6 py-12 lg:px-8">
         <div className="text-center space-y-4">
           <Link

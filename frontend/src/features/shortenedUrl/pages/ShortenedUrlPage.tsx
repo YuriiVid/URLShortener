@@ -4,29 +4,30 @@ import { LoadingScreen, Button, Modal } from "@shared";
 import {
   useCreateShortenedUrlMutation,
   useDeleteShortenedUrlMutation,
-  useGetShortenedUrlQuery,
   useGetShortenedUrlsQuery,
 } from "../api/shortenedUrlApi";
 import { Plus } from "lucide-react";
 import { toast } from "react-hot-toast";
 
-import { UrlTable, CreateUrlModal, ViewUrlModal } from "../components";
+import { UrlTable, CreateUrlModal } from "../components";
 import { isValidUrl } from "@utils";
+import { handleCopyShortUrl } from "../utils";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const ShortenedUrlPage = () => {
   const user = useAppSelector((state) => state.auth.user);
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUrlId, setSelectedUrlId] = useState<number | null>(null);
 
   const { data: urls = [], isLoading } = useGetShortenedUrlsQuery();
   const [newUrl, setNewUrl] = useState("");
 
-  const { data: selectedUrl } = useGetShortenedUrlQuery(selectedUrlId!, { skip: !selectedUrlId });
   const [createUrl] = useCreateShortenedUrlMutation();
   const [deleteUrl] = useDeleteShortenedUrlMutation();
+
+  const navigate = useNavigate();
 
   const handleCreate = useCallback(async () => {
     if (!newUrl) return toast.error("Please enter a URL");
@@ -43,8 +44,7 @@ const ShortenedUrlPage = () => {
   }, [newUrl, createUrl]);
 
   const handleView = (id: number) => {
-    setSelectedUrlId(id);
-    setIsViewModalOpen(true);
+    navigate(`/url/${id}`);
   };
 
   const handleDelete = (id: number) => {
@@ -63,15 +63,6 @@ const ShortenedUrlPage = () => {
       toast.error("Failed to delete URL");
     }
   }, [selectedUrlId, deleteUrl]);
-
-  const handleCopyShortUrl = async (shortUrl: string) => {
-    try {
-      await navigator.clipboard.writeText(shortUrl);
-      toast.success("Short URL copied to clipboard!");
-    } catch {
-      toast.error("Failed to copy URL");
-    }
-  };
 
   if (isLoading) {
     return (
@@ -110,16 +101,6 @@ const ShortenedUrlPage = () => {
         onCreate={handleCreate}
       />
 
-      <ViewUrlModal
-        isOpen={isViewModalOpen}
-        onClose={() => {
-          setIsViewModalOpen(false);
-          setSelectedUrlId(null);
-        }}
-        url={selectedUrl}
-        onCopy={handleCopyShortUrl}
-      />
-
       <Modal
         isOpen={isDeleteModalOpen}
         title="Delete Shortened URL"
@@ -132,6 +113,7 @@ const ShortenedUrlPage = () => {
         confirmLabel="Delete"
         cancelLabel="Cancel"
       />
+      <Outlet />
     </>
   );
 };

@@ -22,30 +22,33 @@ export function AdminsPage() {
     setIsDeleteModalOpen(true);
   };
 
-  const handleCreateAdmin = useCallback(async () => {
-    if (!newUsername.trim()) {
-      toast.error("Please enter a username");
-      return;
-    }
+  const handleCreateAdmin = useCallback(
+    async (username: string, password: string) => {
+      if (!username.trim()) {
+        toast.error("Please enter a username");
+        return;
+      }
 
-    if (!newPassword.trim()) {
-      toast.error("Please enter a password");
-      return;
-    }
+      if (!password.trim()) {
+        toast.error("Please enter a password");
+        return;
+      }
 
-    try {
-      await createAdmin({
-        userName: newUsername.trim(),
-        password: newPassword.trim(),
-      }).unwrap();
-      setNewUsername("");
-      setNewPassword("");
-      setIsCreateModalOpen(false);
-      toast.success("Admin created successfully!");
-    } catch (error) {
-      console.error("Failed to create admin:", error);
-    }
-  }, [newUsername, newPassword, createAdmin]);
+      try {
+        await createAdmin({
+          userName: newUsername.trim(),
+          password: newPassword.trim(),
+        }).unwrap();
+        setNewUsername("");
+        setNewPassword("");
+        setIsCreateModalOpen(false);
+        toast.success("Admin created successfully!");
+      } catch (error) {
+        console.error("Failed to create admin:", error);
+      }
+    },
+    [newUsername, newPassword, createAdmin]
+  );
 
   const handleConfirmDelete = useCallback(async () => {
     if (!adminToDeleteId) return;

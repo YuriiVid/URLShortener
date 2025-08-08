@@ -1,11 +1,11 @@
-export interface ShortenedUrlDto {
+export interface ShortenedUrl {
   id: number;
   longUrl: string;
   shortUrl: string;
   userId: number;
 }
 
-export interface FullShortenedUrlDto {
+export interface FullShortenedUrl {
   id: number;
   longUrl: string;
   shortUrl: string;
@@ -13,6 +13,6 @@ export interface FullShortenedUrlDto {
   createdBy: string;
 }
 
-export interface CreateShortenedUrlDto {
+export interface CreateShortenedUrl {
   longUrl: string;
 }

@@ -1,6 +1,7 @@
 import { Trash, User } from "lucide-react";
 import { Button } from "@shared";
 import type { Admin } from "../types";
+import type React from "react";
 
 interface AdminRowProps {
   admin: Admin;
@@ -8,7 +9,7 @@ interface AdminRowProps {
   onDelete: (admin: Admin) => void;
 }
 
-export const AdminRow = ({ admin, index, onDelete }: AdminRowProps) => {
+export const AdminRow: React.FC<AdminRowProps> = ({ admin, index, onDelete }: AdminRowProps) => {
   return (
     <tr className={`hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? "bg-white" : "bg-gray-25"}`}>
       <td className="px-6 py-4">

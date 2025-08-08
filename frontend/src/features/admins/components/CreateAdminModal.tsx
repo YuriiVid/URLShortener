@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { Modal } from "@shared";
 
@@ -8,7 +8,11 @@ interface CreateAdminModalProps {
   onCancel: () => void;
 }
 
-export const CreateAdminModal = ({ isOpen, onConfirm, onCancel }: CreateAdminModalProps) => {
+export const CreateAdminModal: React.FC<CreateAdminModalProps> = ({
+  isOpen,
+  onConfirm,
+  onCancel,
+}: CreateAdminModalProps) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

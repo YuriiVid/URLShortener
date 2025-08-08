@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useGetAboutQuery, useUpdateAboutMutation } from "../api/aboutApi";
-import { ErrorScreen, LoadingScreen } from "@shared";
+import { ErrorScreen, LoadingScreen, Modal } from "@shared";
 import { getErrorMessage } from "@utils/getErrorMessage";
 import { useAppSelector } from "@app/hooks";
 import toast from "react-hot-toast";
@@ -16,6 +16,8 @@ const AboutPage: React.FC = () => {
   const [content, setContent] = useState("");
   const [hasChanges, setHasChanges] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
 
   useEffect(() => {
     if (data?.content) setContent(data.content);
@@ -40,10 +42,19 @@ const AboutPage: React.FC = () => {
   }, [hasChanges, content, updateAbout]);
 
   const handleCancel = useCallback(() => {
-    if (hasChanges && !window.confirm("You have unsaved changes. Cancel?")) return;
+    if (hasChanges) {
+      setIsCancelModalOpen(true);
+      return;
+    }
     setIsEditing(false);
     setContent(data?.content || "");
   }, [hasChanges, data?.content]);
+
+  const confirmDiscard = useCallback(() => {
+    setIsCancelModalOpen(false);
+    setIsEditing(false);
+    setContent(data?.content || "");
+  }, [data?.content]);
 
   const handleEdit = useCallback(() => {
     setIsEditing(true);
@@ -71,25 +82,37 @@ const AboutPage: React.FC = () => {
   if (!data) return <ErrorScreen title="No Content" message="The about content is not available." type="notfound" />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <AboutHeader
-          canEdit={canEdit}
-          isEditing={isEditing}
-          isSaving={isSaving}
-          onEdit={handleEdit}
-          onCancel={handleCancel}
-        />
-        <AboutEditor ref={textareaRef} isEditing={isEditing} content={content} setContent={setContent} data={data} />
-        <AboutFooter
-          canEdit={canEdit}
-          isEditing={isEditing}
-          isSaving={isSaving}
-          hasChanges={hasChanges}
-          onSave={handleSave}
-          onCancel={handleCancel}
-        />
-      </div>
+    <div className="max-w-5xl mx-auto px-2 sm:px-3 lg:px-4 py-2 sm:py-4">
+      <AboutHeader />
+      <AboutEditor
+        ref={textareaRef}
+        canEdit={canEdit}
+        isSaving={isSaving}
+        isEditing={isEditing}
+        onEdit={handleEdit}
+        onCancel={handleCancel}
+        content={content}
+        setContent={setContent}
+        data={data}
+      />
+      <AboutFooter
+        canEdit={canEdit}
+        isEditing={isEditing}
+        isSaving={isSaving}
+        hasChanges={hasChanges}
+        onSave={handleSave}
+        onCancel={handleCancel}
+      />
+
+      <Modal
+        isOpen={isCancelModalOpen}
+        title="Discard changes?"
+        message="You have unsaved changes. Are you sure you want to discard them?"
+        onConfirm={confirmDiscard}
+        onCancel={() => setIsCancelModalOpen(false)}
+        confirmLabel="Discard"
+        cancelLabel="Keep editing"
+      />
     </div>
   );
 };

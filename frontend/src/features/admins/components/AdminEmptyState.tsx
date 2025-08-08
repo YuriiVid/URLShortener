@@ -1,11 +1,12 @@
 import { User } from "lucide-react";
 import { Button } from "@shared";
+import type React from "react";
 
 interface AdminEmptyStateProps {
   onCreateAdmin: () => void;
 }
 
-export const AdminEmptyState = ({ onCreateAdmin }: AdminEmptyStateProps) => {
+export const AdminEmptyState: React.FC<AdminEmptyStateProps> = ({ onCreateAdmin }: AdminEmptyStateProps) => {
   return (
     <div className="text-center py-12">
       <div className="text-gray-400 mb-4">

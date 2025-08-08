@@ -1,7 +1,16 @@
 import { Modal, UtcDateTimeDisplay, Button } from "@shared";
 import { Copy } from "lucide-react";
+import type React from "react";
+import type { FullShortenedUrl } from "../types";
 
-const ViewUrlModal = ({ isOpen, onClose, url, onCopy }: any) => {
+interface ViewUrlModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  url: FullShortenedUrl | undefined;
+  onCopy: (shortUrl: string) => void;
+}
+
+const ViewUrlModal: React.FC<ViewUrlModalProps> = ({ isOpen, onClose, url, onCopy }) => {
   if (!url) return null;
 
   return (

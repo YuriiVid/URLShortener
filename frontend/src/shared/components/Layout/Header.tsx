@@ -32,7 +32,6 @@ const Header: React.FC<HeaderProps> = ({ userRole, userName }) => {
             <h1 className="text-2xl font-bold text-gray-900">URLShortener</h1>
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -43,7 +42,6 @@ const Header: React.FC<HeaderProps> = ({ userRole, userName }) => {
             </button>
           </div>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             <Link className="text-gray-600 hover:text-gray-900 px-3 py-2" to={"/home"}>
               Home
@@ -63,7 +61,6 @@ const Header: React.FC<HeaderProps> = ({ userRole, userName }) => {
             )}
           </nav>
 
-          {/* User Menu (Desktop) */}
           <div className="hidden md:flex items-center space-x-4">
             {userName && (
               <div className="flex items-center space-x-2 text-sm text-gray-600">
@@ -82,7 +79,6 @@ const Header: React.FC<HeaderProps> = ({ userRole, userName }) => {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
         <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
           <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
             <Link

@@ -1,9 +1,9 @@
 import { api } from "@shared";
-import type { ShortenedUrlDto, FullShortenedUrlDto, CreateShortenedUrlDto } from "../types";
+import type { ShortenedUrl, FullShortenedUrl, CreateShortenedUrl } from "../types";
 
 export const shortenedUrlApi = api.injectEndpoints({
   endpoints: (build) => ({
-    getShortenedUrls: build.query<ShortenedUrlDto[], void>({
+    getShortenedUrls: build.query<ShortenedUrl[], void>({
       query: () => ({
         url: "/shortenedUrls",
         method: "GET",
@@ -11,7 +11,7 @@ export const shortenedUrlApi = api.injectEndpoints({
       providesTags: [{ type: "ShortenedUrls", id: "LIST" }],
     }),
 
-    getShortenedUrl: build.query<FullShortenedUrlDto, number>({
+    getShortenedUrl: build.query<FullShortenedUrl, number>({
       query: (id) => ({
         url: `/shortenedUrls/${id}`,
         method: "GET",
@@ -19,7 +19,7 @@ export const shortenedUrlApi = api.injectEndpoints({
       providesTags: (_, __, id) => [{ type: "ShortenedUrls", id }],
     }),
 
-    createShortenedUrl: build.mutation<ShortenedUrlDto, CreateShortenedUrlDto>({
+    createShortenedUrl: build.mutation<ShortenedUrl, CreateShortenedUrl>({
       query: (dto) => ({
         url: "/shortenedUrls",
         method: "POST",

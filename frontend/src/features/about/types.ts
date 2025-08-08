@@ -7,3 +7,9 @@ export interface AboutResponse {
 export interface UpdateAboutRequest {
   content: string;
 }
+
+export interface AboutPage {
+  content: string;
+  lastUpdatedBy?: string;
+  lastUpdatedAt?: string;
+}

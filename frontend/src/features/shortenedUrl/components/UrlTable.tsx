@@ -1,16 +1,19 @@
 import { Button } from "@shared";
 import { ExternalLink, Copy, Eye, Trash } from "lucide-react";
 import { isAdmin } from "@utils";
+import type { ShortenedUrl } from "../types";
+import type { User } from "@shared/types";
+import type React from "react";
 
 interface UrlTableProps {
-  urls: any[];
-  user: any;
+  urls: ShortenedUrl[];
+  user: User | null;
   onCopy: (shortUrl: string) => void;
   onView: (id: number) => void;
   onDelete: (id: number) => void;
 }
 
-const UrlTable = ({ urls, user, onCopy, onView, onDelete }: UrlTableProps) => {
+const UrlTable: React.FC<UrlTableProps> = ({ urls, user, onCopy, onView, onDelete }: UrlTableProps) => {
   if (urls.length === 0) {
     return (
       <div className="mt-8">
@@ -34,9 +37,11 @@ const UrlTable = ({ urls, user, onCopy, onView, onDelete }: UrlTableProps) => {
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   Short URL
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                {user && (
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -94,16 +99,18 @@ const UrlTable = ({ urls, user, onCopy, onView, onDelete }: UrlTableProps) => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-2">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => onView(url.id)}
-                        className="inline-flex items-center px-2.5 py-1.5"
-                        title="View details"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      {isAdmin(user) && (
+                      {user && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => onView(url.id)}
+                          className="inline-flex items-center px-2.5 py-1.5"
+                          title="View details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {(isAdmin(user) || url.userId === user?.id) && (
                         <Button
                           variant="secondary"
                           size="sm"
