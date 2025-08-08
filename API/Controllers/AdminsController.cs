@@ -32,7 +32,7 @@ public class AdminsController : ControllerBase
         var adminRole = await _roleManager.FindByNameAsync("Admin");
         if (adminRole == null)
         {
-            return new List<AdminUserDto>();
+            return NotFound("Admin role does not exist");
         }
 
         var admins = await _userManager.GetUsersInRoleAsync("Admin");
@@ -40,7 +40,7 @@ public class AdminsController : ControllerBase
         var adminDtos = admins.Select(admin => new AdminUserDto
         {
             Id = admin.Id,
-            UserName = admin.UserName,
+            UserName = admin.UserName!,
             CreatedAt = admin.CreatedAt,
         });
 
@@ -60,7 +60,7 @@ public class AdminsController : ControllerBase
         return new AdminUserDto
         {
             Id = admin.Id,
-            UserName = admin.UserName,
+            UserName = admin.UserName!,
             CreatedAt = admin.CreatedAt,
         };
     }

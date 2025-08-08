@@ -1,8 +1,5 @@
 using API.DTOs;
-using API.Extensions;
 using API.Models;
-using API.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

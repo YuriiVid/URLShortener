@@ -47,7 +47,7 @@ builder
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]!)),
             ValidIssuer = builder.Configuration["JWT:Issuer"],
             ValidateIssuer = true,
             ValidateAudience = false,
@@ -89,7 +89,7 @@ await SuperAdminSeeder.SeedAsync(app.Services);
 
 app.UseCors(opt =>
 {
-    opt.WithOrigins(builder.Configuration["JWT:ClientUrl"]).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+    opt.WithOrigins(builder.Configuration["JWT:ClientUrl"]!).AllowAnyHeader().AllowAnyMethod().AllowCredentials();
 });
 
 if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))

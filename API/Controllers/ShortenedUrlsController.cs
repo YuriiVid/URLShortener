@@ -38,6 +38,7 @@ public class ShortenedUrlsController : ControllerBase
         );
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<FullShortenedUrlDto>> GetShortenedUrl(int id)
     {
@@ -116,7 +117,7 @@ public class ShortenedUrlsController : ControllerBase
             return NotFound("Shortened URL not found");
         }
 
-        if (url.UserId != User.GetCurrentUserId() && !User.IsInRole("Admin"))
+        if (url.UserId != User.GetCurrentUserId() && !User.IsAdmin())
         {
             return Forbid();
         }

@@ -25,21 +25,18 @@ public class JWTService : IJWTService
         _config = config;
         _userManager = userManager;
 
-        _jwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
+        _jwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]!));
 
         _accessTokenLifetime = TimeSpan.FromMinutes(_config.GetValue<int>("JWT:AccessTokenExpiresInMinutes"));
         _refreshTokenLifetime = TimeSpan.FromDays(_config.GetValue<int>("JWT:RefreshTokenExpiresInDays"));
     }
 
-    /// <summary>
-    /// Creates a short-lived JWT access token.
-    /// </summary>
     public async Task<string> CreateJWT(User user)
     {
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Name, user.UserName!),
         };
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -60,10 +57,6 @@ public class JWTService : IJWTService
         return handler.WriteToken(token);
     }
 
-    /// <summary>
-    /// Generates a new opaque refresh token *and* removes the old one.
-    /// The returned string is of the form "{expiry:o}|{randomBase64}".
-    /// </summary>
     public async Task<string> CreateRefreshTokenAsync(User user)
     {
         await _userManager.RemoveAuthenticationTokenAsync(user, RefreshProvider, RefreshTokenName);
@@ -83,9 +76,6 @@ public class JWTService : IJWTService
         return tokenValue;
     }
 
-    /// <summary>
-    /// Validates the stored token string (from Identity store) and returns true if not expired.
-    /// </summary>
     public bool IsRefreshTokenValid(string storedToken)
     {
         if (string.IsNullOrEmpty(storedToken))

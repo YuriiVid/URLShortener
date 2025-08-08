@@ -63,23 +63,18 @@ public class AuthController : ControllerBase
         if (!_jwtService.IsRefreshTokenValid(incomingToken))
         {
             await _userManager.RemoveAuthenticationTokenAsync(user, "RefreshToken", "MyAppRefreshToken");
-            return Unauthorized();
+            return Unauthorized("Invalid or expired refresh token");
+        }
+        if (await _userManager.IsLockedOutAsync(user))
+        {
+            return Unauthorized(
+                $"Your account has been locked due to too many failed attempts. You should wait until {user.LockoutEnd} (UTC time) to be able to login"
+            );
         }
 
         var newRefresh = await _jwtService.CreateRefreshTokenAsync(user);
-        Response.Cookies.Append(
-            "refreshToken",
-            newRefresh,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(_config.GetValue<int>("JWT:RefreshTokenExpiresInDays")),
-            }
-        );
-
-        return await _userManager.IsLockedOutAsync(user) ? Unauthorized() : Ok(await CreateAuthUserDto(user));
+        AddRefreshTokenCookie(newRefresh);
+        return Ok(await CreateAuthUserDto(user));
     }
 
     [HttpPost("register")]
@@ -120,21 +115,14 @@ public class AuthController : ControllerBase
                 $"Your account has been locked due to too many failed attempts. You should wait until {user.LockoutEnd} (UTC time) to be able to login"
             );
         }
-
+        if (!result.Succeeded)
+        {
+            return Unauthorized("Invalid username or password");
+        }
         var refresh = await _jwtService.CreateRefreshTokenAsync(user);
-        Response.Cookies.Append(
-            "refreshToken",
-            refresh,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(_config.GetValue<int>("JWT:RefreshTokenExpiresInDays")),
-            }
-        );
+        AddRefreshTokenCookie(refresh);
 
-        return result.Succeeded ? Ok(await CreateAuthUserDto(user)) : Unauthorized("Invalid username or password");
+        return Ok(await CreateAuthUserDto(user));
     }
 
     [Authorize]
@@ -165,10 +153,25 @@ public class AuthController : ControllerBase
             User = new UserDto
             {
                 Id = user.Id,
-                UserName = user.UserName,
+                UserName = user.UserName!,
                 Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault() ?? "User",
             },
             JWT = await _jwtService.CreateJWT(user),
         };
+    }
+
+    private void AddRefreshTokenCookie(string token)
+    {
+        Response.Cookies.Append(
+            "refreshToken",
+            token,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(_config.GetValue<int>("JWT:RefreshTokenExpiresInDays")),
+            }
+        );
     }
 }

@@ -40,7 +40,7 @@ public class AboutPageController : ControllerBase
     public async Task<IActionResult> UpdateAboutPage(UpdateAboutPageDto dto)
     {
         if (string.IsNullOrWhiteSpace(dto.Content))
-            return BadRequest("Content is required.");
+            return BadRequest("Content is required");
 
         var about = await _context.AboutPages.FirstOrDefaultAsync(x => x.Id == 1);
         if (about == null)
